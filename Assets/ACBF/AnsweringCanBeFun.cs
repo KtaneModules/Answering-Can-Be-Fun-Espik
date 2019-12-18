@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using KModkit;
 
@@ -44,6 +45,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
     private bool isGoodTime = true;
     private bool inputMode = true;
     private bool canListen = true;
+    private bool animating = false;
 
     private string message;
     private int msgIndex = 0;
@@ -104,9 +106,9 @@ public class AnsweringCanBeFun : MonoBehaviour {
 
 
         // Generates a decoy area code that doesn't match with the correct one
-        do 
+        do
             oldAreaCode = UnityEngine.Random.Range(100, 1000);
-            while (oldAreaCode == newAreaCode);
+        while (oldAreaCode == newAreaCode);
 
         oldNumber = oldAreaCode * 10000000 + UnityEngine.Random.Range(0, 10000000);
 
@@ -150,7 +152,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
             // Ten digits have been entered
             if (keysPressed >= 10) {
                 // Checks timer rule for last digit
-                lastTimerDigit = (int) Math.Floor(Bomb.GetTime()) % 10;
+                lastTimerDigit = (int)Math.Floor(Bomb.GetTime()) % 10;
 
                 if (lastTimerDigit == i)
                     isGoodTime = true;
@@ -172,6 +174,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
 
     // Module submitting
     private IEnumerator CallNumber() {
+        animating = true;
         Debug.LogFormat("[Answering Can Be Fun #{0}] You dialed {1}.", moduleId, submitNumber);
         yield return new WaitForSeconds(0.5f);
         Audio.PlaySoundAtTransform("ACBF_Ring", transform);
@@ -215,6 +218,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
 
         inputMode = true;
         submitNumber = "";
+        animating = false;
     }
 
     // Module strikes
@@ -253,15 +257,18 @@ public class AnsweringCanBeFun : MonoBehaviour {
         Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, gameObject.transform);
         yield return new WaitForSeconds(0.5f);
 
-        // If this is the second Answering Can Be Fun module solved with a strike on it
-        if (moduleStrikes > 0 && acbfSolves > 1 && moduleStrikes != acbfStrikes && playedDoubleFault == false && phaseTwo == false) {
+        /* This if statement is supposed to work when this the second Answering Can Be Fun module that solved that a strike also occured on, 
+         * from the last time the game has been restarted, and then never to activate until a restart and that condition is met again.*/
+
+        // If this is the second Answering Can Be Fun module solved with a strike on it (currently bugged)
+        /*if (moduleStrikes > 0 && acbfSolves > 1 && moduleStrikes != acbfStrikes && playedDoubleFault == false) {
             Debug.LogFormat("[Answering Can Be Fun #{0}] Solve! Your friend knew that you struck on two of these modules now, though.", moduleId);
             Audio.PlaySoundAtTransform("ACBF_Sol_Doublefault", transform);
             playedDoubleFault = true;
-        }
+        }*/
 
         // If there was a strike on this module
-        else if (moduleStrikes > 0) {
+        if (moduleStrikes > 0) {
             Debug.LogFormat("[Answering Can Be Fun #{0}] Solve! Your friend knew that you struck, though.", moduleId);
             int index;
 
@@ -346,8 +353,8 @@ public class AnsweringCanBeFun : MonoBehaviour {
         else {
             for (int i = 0; i < serialNumber.Length; i++) {
                 if (Char.IsNumber(serialNumber, i) == true)
-                    newNumber += serialNumber[i] * digitCount % 10; // serialNumber[i]'s value is 2 lower than it should be, I incorporated that bug into the manual
-                
+                    newNumber += serialNumber[i] * digitCount % 10; // serialNumber[i]'s value is 2 lower than it should be, I incorporated this bug into the manual
+
                 else
                     newNumber += (message.Count(x => x == serialNumber[i]) + 3 + i) % 10;
             }
@@ -482,5 +489,195 @@ public class AnsweringCanBeFun : MonoBehaviour {
     public void SetRedLEDs() {
         for (int i = 0; i < LEDs.Length; i++)
             LEDs[i].material = LEDColors[1];
+    }
+
+
+    // Twitch Plays support - made by eXish
+
+
+    //twitch plays
+    private bool paramsValid(string prms) {
+        char[] valids = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+        if (prms.Length == 10) {
+            for (int i = 0; i < 10; i++) {
+                if (!valids.Contains(prms.ElementAt(i))) {
+                    return false;
+                }
+            }
+        }
+        else if (prms.Length == 12) {
+            for (int i = 0; i < 12; i++) {
+                if (i == 3 || i == 7) {
+                    if (!prms.ElementAt(i).Equals('-')) {
+                        return false;
+                    }
+                }
+                else if (!valids.Contains(prms.ElementAt(i))) {
+                    return false;
+                }
+            }
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+
+#pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"!{0} listen [Listens to your friend's last recorded message] | !{0} dial <phone#> [Dials the specified phone number] | Valid phone numbers have 10 digits";
+#pragma warning restore 414
+
+    IEnumerator ProcessTwitchCommand(string command) {
+        if (Regex.IsMatch(command, @"^\s*listen\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)) {
+            yield return null;
+            if (!inputMode) {
+                yield return "sendtochaterror The recorded message cannot be played while one is being processed!";
+            }
+            else if (canListen) {
+                PlayButton.OnInteract();
+            }
+            else {
+                yield return "sendtochaterror The recorded message cannot be played since the 10 second cooldown is still in effect!";
+            }
+            yield break;
+        }
+        string[] parameters = command.Split(' ');
+        if (Regex.IsMatch(parameters[0], @"^\s*dial\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) || Regex.IsMatch(parameters[0], @"^\s*submit\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)) {
+            if (parameters.Length == 1) {
+                yield return "sendtochaterror Please specify which phone number you would like to dial!";
+            }
+            else if (parameters.Length == 2) {
+                if (!inputMode) {
+                    yield return "sendtochaterror A phone number cannot be dialed while one is being processed!";
+                }
+                else if (paramsValid(parameters[1])) {
+                    yield return null;
+                    if (parameters[1].Length == 12) {
+                        parameters[1] = parameters[1].Replace("-", "");
+                    }
+                    for (int i = 0; i < 10; i++) {
+                        if (i == 9) {
+                            int temp = 0;
+                            int.TryParse(parameters[1].Substring(9), out temp);
+                            while ((int)Bomb.GetTime() % 60 % 10 != temp) {
+                                yield return new WaitForSeconds(0.1f);
+                            }
+                        }
+                        if (parameters[1].ElementAt(i).Equals('0')) {
+                            Keys[0].OnInteract();
+                        }
+                        else if (parameters[1].ElementAt(i).Equals('1')) {
+                            Keys[1].OnInteract();
+                        }
+                        else if (parameters[1].ElementAt(i).Equals('2')) {
+                            Keys[2].OnInteract();
+                        }
+                        else if (parameters[1].ElementAt(i).Equals('3')) {
+                            Keys[3].OnInteract();
+                        }
+                        else if (parameters[1].ElementAt(i).Equals('4')) {
+                            Keys[4].OnInteract();
+                        }
+                        else if (parameters[1].ElementAt(i).Equals('5')) {
+                            Keys[5].OnInteract();
+                        }
+                        else if (parameters[1].ElementAt(i).Equals('6')) {
+                            Keys[6].OnInteract();
+                        }
+                        else if (parameters[1].ElementAt(i).Equals('7')) {
+                            Keys[7].OnInteract();
+                        }
+                        else if (parameters[1].ElementAt(i).Equals('8')) {
+                            Keys[8].OnInteract();
+                        }
+                        else if (parameters[1].ElementAt(i).Equals('9')) {
+                            Keys[9].OnInteract();
+                        }
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                }
+                else {
+                    yield return "sendtochaterror '" + parameters[1] + "' is an invalid phone number! Make sure to use digits 0-9 and if you tried to use -'s make sure they are in the right place!";
+                }
+            }
+            else if (parameters.Length > 2) {
+                yield return "sendtochaterror Phone numbers do not have spaces in them!";
+            }
+            yield break;
+        }
+    }
+
+    IEnumerator TwitchHandleForcedSolve() {
+        keysPressed = 0;
+        submitNumber = "";
+        DisplayToScreen("");
+        PlayButton.OnInteract();
+        for (int i = 0; i < 10; i++) {
+            if (i == 9) {
+                if ((int)Bomb.GetTime() % 60 % 10 == 0) {
+                    Keys[0].OnInteract();
+                }
+                else if ((int)Bomb.GetTime() % 60 % 10 == 1) {
+                    Keys[1].OnInteract();
+                }
+                else if ((int)Bomb.GetTime() % 60 % 10 == 2) {
+                    Keys[2].OnInteract();
+                }
+                else if ((int)Bomb.GetTime() % 60 % 10 == 3) {
+                    Keys[3].OnInteract();
+                }
+                else if ((int)Bomb.GetTime() % 60 % 10 == 4) {
+                    Keys[4].OnInteract();
+                }
+                else if ((int)Bomb.GetTime() % 60 % 10 == 5) {
+                    Keys[5].OnInteract();
+                }
+                else if ((int)Bomb.GetTime() % 60 % 10 == 6) {
+                    Keys[6].OnInteract();
+                }
+                else if ((int)Bomb.GetTime() % 60 % 10 == 7) {
+                    Keys[7].OnInteract();
+                }
+                else if ((int)Bomb.GetTime() % 60 % 10 == 8) {
+                    Keys[8].OnInteract();
+                }
+                else if ((int)Bomb.GetTime() % 60 % 10 == 9) {
+                    Keys[9].OnInteract();
+                }
+                break;
+            }
+            if (newNumber.ElementAt(i).Equals('0')) {
+                Keys[0].OnInteract();
+            }
+            else if (newNumber.ElementAt(i).Equals('1')) {
+                Keys[1].OnInteract();
+            }
+            else if (newNumber.ElementAt(i).Equals('2')) {
+                Keys[2].OnInteract();
+            }
+            else if (newNumber.ElementAt(i).Equals('3')) {
+                Keys[3].OnInteract();
+            }
+            else if (newNumber.ElementAt(i).Equals('4')) {
+                Keys[4].OnInteract();
+            }
+            else if (newNumber.ElementAt(i).Equals('5')) {
+                Keys[5].OnInteract();
+            }
+            else if (newNumber.ElementAt(i).Equals('6')) {
+                Keys[6].OnInteract();
+            }
+            else if (newNumber.ElementAt(i).Equals('7')) {
+                Keys[7].OnInteract();
+            }
+            else if (newNumber.ElementAt(i).Equals('8')) {
+                Keys[8].OnInteract();
+            }
+            else if (newNumber.ElementAt(i).Equals('9')) {
+                Keys[9].OnInteract();
+            }
+            yield return new WaitForSeconds(0.1f);
+        }
+        while (animating) { yield return true; }
     }
 }

@@ -412,7 +412,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
         case 32: message = "HELLOISITMEYOURELOOKINGFOR"; break;
         case 33: message = "LIFEGIVESYOULEMONSILLMAKEBEEFSTEW"; break;
         case 34: message = "LETMESEEYOUMOVESOMETHING"; break;
-        case 35: message = "IEATTOOUCHIDRINKTOOMUCHIWANTTOOMUCH"; break;
+        case 35: message = "IEATTOOMUCHIDRINKTOOMUCHIWANTTOOMUCH"; break;
         case 36: message = "ITSHIGHNOON"; break;
         case 37: message = "NOPEITSJUSTCHUCKTESTA"; break;
         case 38: message = "PSYCHTHATSTHEWRONGNUMBER"; break;
@@ -608,10 +608,12 @@ public class AnsweringCanBeFun : MonoBehaviour {
     }
 
     IEnumerator TwitchHandleForcedSolve() {
+        if (isGenerated == false)
+            GenerateNumber();
+
         keysPressed = 0;
         submitNumber = "";
-        DisplayToScreen("");
-        PlayButton.OnInteract();
+        
         for (int i = 0; i < 10; i++) {
             if (i == 9) {
                 if ((int)Bomb.GetTime() % 60 % 10 == 0) {

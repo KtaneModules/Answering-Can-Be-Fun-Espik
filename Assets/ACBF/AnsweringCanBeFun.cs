@@ -524,7 +524,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
     }
 
 #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"!{0} listen [Listens to your friend's last recorded message] | !{0} dial <phone#> [Dials the specified phone number] | Valid phone numbers have 10 digits";
+    private readonly string TwitchHelpMessage = @"!{0} listen [Listens to your friend's last recorded message] | !{0} dial <phone#> [Dials the specified phone number] | Valid phone numbers have 10 digits | The 10th digit will automatically be submitted at the correct time";
 #pragma warning restore 414
 
     IEnumerator ProcessTwitchCommand(string command) {

@@ -127,12 +127,8 @@ public class AnsweringCanBeFun : MonoBehaviour {
 
         if (canListen == true) {
 
-            if (isGenerated == false) {
+            if (isGenerated == false)
                 GenerateNumber();
-
-                if (phaseTwo == true)
-                    SetRedLEDs();
-            }
 
             StartCoroutine(PlayMessage());
         }
@@ -344,6 +340,9 @@ public class AnsweringCanBeFun : MonoBehaviour {
     // Generates the number
     private void GenerateNumber() {
         ChooseMessage();
+
+        if (phaseTwo == true)
+            SetRedLEDs();
 
         if (isUnicorn == true) {
             newNumber = "1234567890";

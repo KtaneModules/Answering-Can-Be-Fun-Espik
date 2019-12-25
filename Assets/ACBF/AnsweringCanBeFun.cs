@@ -352,7 +352,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
         else {
             for (int i = 0; i < serialNumber.Length; i++) {
                 if (Char.IsNumber(serialNumber, i) == true)
-                    newNumber += serialNumber[i] * digitCount % 10; // serialNumber[i]'s value is 2 lower than it should be, I incorporated this bug into the manual
+                    newNumber += serialNumber[i] * digitCount % 10; // serialNumber[i] results in a number 2 lower than what's displayed on the serial number, when used within this context
 
                 else
                     newNumber += (message.Count(x => x == serialNumber[i]) + 3 + i) % 10;

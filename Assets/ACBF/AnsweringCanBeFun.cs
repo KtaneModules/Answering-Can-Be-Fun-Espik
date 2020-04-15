@@ -87,12 +87,8 @@ public class AnsweringCanBeFun : MonoBehaviour {
         if (Bomb.GetBatteryCount() == 4 && Bomb.GetBatteryHolderCount() == 2 && Bomb.IsIndicatorOn("BOB"))
             isUnicorn = true;
 
-        // Generates the area code (first 3 numbers)
-        if (isUnicorn == true)
-            newAreaCode = 123;
-
-        else
-            newAreaCode = GetAreaCode();
+        // Gets the area code
+        newAreaCode = GetAreaCode();
 
         // Sets the area code to the number, prepends zeros when needed
         if (newAreaCode.ToString().Length == 1)
@@ -107,7 +103,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
 
         // Generates a decoy area code that doesn't match with the correct one
         do
-            oldAreaCode = UnityEngine.Random.Range(100, 1000);
+            oldAreaCode = UnityEngine.Random.Range(124, 1000);
         while (oldAreaCode == newAreaCode);
 
         oldNumber = oldAreaCode * 10000000 + UnityEngine.Random.Range(0, 10000000);
@@ -182,12 +178,6 @@ public class AnsweringCanBeFun : MonoBehaviour {
             yield return new WaitForSeconds(7.0f);
             Debug.LogFormat("[Answering Can Be Fun #{0}] Strike! You dialed the old number!", moduleId);
             StartCoroutine(Strike(false));
-        }
-
-        // If the unicorn applies and the number is incorrect
-        else if (isUnicorn == true && submitNumber != "1234567890") {
-            Debug.LogFormat("[Answering Can Be Fun #{0}] Strike! For this case, you actually disobey the manual and actually dial 1234567890.", moduleId);
-            StartCoroutine(Strike(true));
         }
 
         // If the unicorn applies and the number is correct
@@ -396,7 +386,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
         case 17: message = "IAMGOINGTOBESWITZERLAND"; break;
         case 18: message = "IKNOWWHATYOURETHINKING"; break;
         case 19: message = "CONGRATULATIONSYOUVELAUNCHEDTHEPINKSLIPVIRUS"; break;
-        case 20: message = "BUTLETSSEENOWWEHAVEONOURTEAMWEHAVEWHOSONFIRST"; break;
+        case 20: message = "WELLLETSSEENOWWEHAVEONOURTEAMWEHAVEWHOSONFIRST"; break;
         case 21: message = "SHENEVEREVENKNEWHERSHIRTHADAWHOLELOTOFSTYLE"; break;
         case 22: message = "OHYOUALMOSTHADITYOUGOTTOBEQUICKERTHANTHAT"; break;
         case 23: message = "AMNESIADUSTYOUTHROWAPINCHTHEKIDFORGETSEVERYTHINGTHATHAPPENEDFORTHELASTFEWSECONDS"; break;
@@ -419,7 +409,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
         case 40: message = "IJUSTWASTEDTENSECONDSOFYOURLIFE"; break;
         case 41: message = "WHETHERYOUREYOUNGWHETHERYOUREOLDWHETHERYOUREREALLYOLDWHETHERYOUREGREATWHETHERYOUSUCKWHETHERYOUREALLYSUCK"; break;
         case 42: message = "YEET"; break;
-        case 43: message = "THEREAREFOURBATTERIESINTWOHOLDERSANDALITBOBINDICATORPLEASEDIALONETWOTHREEFOURFIVESIXSEVENEIGHTNINETEN"; break;
+        case 43: message = "THEREAREFOURBATTERIESINTWOHOLDERSANDALITBOBINDICATORPLEASEDIALONETWOTHREEFOURFIVESIXSEVENEIGHTNINEZERO"; break;
         default: message = "TESTTESTONETWOTHREE"; break;
         }
 

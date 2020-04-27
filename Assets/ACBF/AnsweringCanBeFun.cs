@@ -267,7 +267,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
             if (index == 0)
                 Audio.PlaySoundAtTransform("ACBF_Sol_Fault1", transform);
 
-            else if (index == 0)
+            else if (index == 1)
                 Audio.PlaySoundAtTransform("ACBF_Sol_Fault2", transform);
 
             else

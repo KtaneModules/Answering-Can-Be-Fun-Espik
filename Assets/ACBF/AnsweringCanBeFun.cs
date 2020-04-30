@@ -58,9 +58,20 @@ public class AnsweringCanBeFun : MonoBehaviour {
 
     private int moduleStrikes = 0;
 
+    private ACBFSettings Settings;
+
+    sealed class ACBFSettings {
+        public bool disableTaunts = false;
+    }
+
     // Ran as bomb loads
     private void Awake() {
         moduleId = moduleIdCounter++;
+
+        // Module Settings
+        var modConfig = new ModConfig<ACBFSettings>("Answering Can Be Fun");
+        Settings = modConfig.Settings;
+        modConfig.Settings = Settings;
 
         // Delegation
         for (int i = 0; i < Keys.Length; i++) {
@@ -247,14 +258,14 @@ public class AnsweringCanBeFun : MonoBehaviour {
          * from the last time the game has been restarted, and then never to activate until a restart and that condition is met again.*/
 
         // If this is the second Answering Can Be Fun module solved with a strike on it (currently bugged)
-        /*if (moduleStrikes > 0 && acbfSolves > 1 && moduleStrikes != acbfStrikes && playedDoubleFault == false) {
+        /*if (moduleStrikes > 0 && acbfSolves > 1 && moduleStrikes != acbfStrikes && playedDoubleFault == false && Settings.disableTaunts == false) {
             Debug.LogFormat("[Answering Can Be Fun #{0}] Solve! Your friend knew that you struck on two of these modules now, though.", moduleId);
             Audio.PlaySoundAtTransform("ACBF_Sol_Doublefault", transform);
             playedDoubleFault = true;
         }*/
 
         // If there was a strike on this module
-        if (moduleStrikes > 0) {
+        if (moduleStrikes > 0 && Settings.disableTaunts == false) {
             Debug.LogFormat("[Answering Can Be Fun #{0}] Solve! Your friend knew that you struck, though.", moduleId);
             int index;
 

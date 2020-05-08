@@ -14,9 +14,9 @@ MonoBehaviour:
   id: AnsweringCanBeFun
   title: Answering Can Be Fun
   author: Espik
-  description: "Answering Can Be Fun v1.3\nf\xFC\xF1\n\nModule ID: AnsweringCanBeFun\n\nAuthor:
+  description: "Answering Can Be Fun v1.4\nf\xFC\xF1\n\nModule ID: AnsweringCanBeFun\n\nAuthor:
     Espik\n\nManual Page: https://ktane.timwi.de/HTML/Answering%20Can%20Be%20Fun.html\n\nSource
     Code: https://github.com/Espik/Answering-Can-Be-Fun"
-  version: v1.3
+  version: v1.4
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 184fea6ecfbb0954a87545ea569cabef, type: 3}

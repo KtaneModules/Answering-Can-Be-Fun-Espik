@@ -3795,6 +3795,7 @@ MonoBehaviour:
   LEDColors:
   - {fileID: 2100000, guid: 3b8b49be55529714797eaa20e62b8041, type: 2}
   - {fileID: 2100000, guid: 9b814b19699fe5a49aebbe80f563957a, type: 2}
+  SpeakerPos: {fileID: 4334623391452998}
 --- !u!114 &114442575268931772
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3893,7 +3894,7 @@ MonoBehaviour:
   m_Script: {fileID: -706292897, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HighlightScale: {x: 1.1, y: 1.1, z: 0.5}
+  HighlightScale: {x: 1.05, y: 1.1, z: 0.5}
   OutlineAmount: 0
 --- !u!114 &114515907856392842
 MonoBehaviour:

@@ -18,6 +18,8 @@ public class AnsweringCanBeFun : MonoBehaviour {
     public Renderer[] LEDs;
     public Material[] LEDColors;
 
+    public Transform SpeakerPos;
+
     // Logging info
     private static int moduleIdCounter = 1;
     private int moduleId;
@@ -180,12 +182,12 @@ public class AnsweringCanBeFun : MonoBehaviour {
         animating = true;
         Debug.LogFormat("[Answering Can Be Fun #{0}] You dialed {1}.", moduleId, submitNumber);
         yield return new WaitForSeconds(0.5f);
-        Audio.PlaySoundAtTransform("ACBF_Ring", transform);
+        Audio.PlaySoundAtTransform("ACBF_Ring", SpeakerPos);
         yield return new WaitForSeconds(5.0f);
 
         // If the submitted number is the same as the old number
         if (submitNumber == oldNumber.ToString()) {
-            Audio.PlaySoundAtTransform("ACBF_Str_Oldnumber", transform);
+            Audio.PlaySoundAtTransform("ACBF_Str_Oldnumber", SpeakerPos);
             yield return new WaitForSeconds(7.0f);
             Debug.LogFormat("[Answering Can Be Fun #{0}] Strike! You dialed the old number!", moduleId);
             StartCoroutine(Strike(false));
@@ -197,7 +199,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
 
         // If the first nine digits are correct but the time is wrong
         else if ((submitNumber.Substring(0, 9) == newNumber.Substring(0, 9)) && isGoodTime == false) {
-            Audio.PlaySoundAtTransform("ACBF_Str_Badtime", transform);
+            Audio.PlaySoundAtTransform("ACBF_Str_Badtime", SpeakerPos);
             yield return new WaitForSeconds(5.0f);
             Debug.LogFormat("[Answering Can Be Fun #{0}] Strike! The first nine digits were correct, but you failed to dial the last digit at the right time!", moduleId);
             StartCoroutine(Strike(false));
@@ -235,14 +237,14 @@ public class AnsweringCanBeFun : MonoBehaviour {
                 index = UnityEngine.Random.Range(0, 8);
 
             switch (index) {
-            case 1: Audio.PlaySoundAtTransform("ACBF_Str_Norm2", transform); break;
-            case 2: Audio.PlaySoundAtTransform("ACBF_Str_Norm3", transform); break;
-            case 3: Audio.PlaySoundAtTransform("ACBF_Str_Norm4", transform); break;
-            case 4: Audio.PlaySoundAtTransform("ACBF_Str_Norm6", transform); break;
-            case 5: Audio.PlaySoundAtTransform("ACBF_Str_Norm7", transform); break;
-            case 6: Audio.PlaySoundAtTransform("ACBF_Str_Norm1", transform); break;
-            case 7: Audio.PlaySoundAtTransform("ACBF_Str_Norm5", transform); break;
-            default: Audio.PlaySoundAtTransform("ACBF_Str_Norm8", transform); break;
+            case 1: Audio.PlaySoundAtTransform("ACBF_Str_Norm2", SpeakerPos); break;
+            case 2: Audio.PlaySoundAtTransform("ACBF_Str_Norm3", SpeakerPos); break;
+            case 3: Audio.PlaySoundAtTransform("ACBF_Str_Norm4", SpeakerPos); break;
+            case 4: Audio.PlaySoundAtTransform("ACBF_Str_Norm6", SpeakerPos); break;
+            case 5: Audio.PlaySoundAtTransform("ACBF_Str_Norm7", SpeakerPos); break;
+            case 6: Audio.PlaySoundAtTransform("ACBF_Str_Norm1", SpeakerPos); break;
+            case 7: Audio.PlaySoundAtTransform("ACBF_Str_Norm5", SpeakerPos); break;
+            default: Audio.PlaySoundAtTransform("ACBF_Str_Norm8", SpeakerPos); break;
             }
         }
     }
@@ -260,7 +262,7 @@ public class AnsweringCanBeFun : MonoBehaviour {
         // If this is the second Answering Can Be Fun module solved with a strike on it (currently bugged)
         /*if (moduleStrikes > 0 && acbfSolves > 1 && moduleStrikes != acbfStrikes && playedDoubleFault == false && Settings.disableTaunts == false) {
             Debug.LogFormat("[Answering Can Be Fun #{0}] Solve! Your friend knew that you struck on two of these modules now, though.", moduleId);
-            Audio.PlaySoundAtTransform("ACBF_Sol_Doublefault", transform);
+            Audio.PlaySoundAtTransform("ACBF_Sol_Doublefault", SpeakerPos);
             playedDoubleFault = true;
         }*/
 
@@ -276,13 +278,13 @@ public class AnsweringCanBeFun : MonoBehaviour {
                 index = UnityEngine.Random.Range(0, 2);
 
             if (index == 0)
-                Audio.PlaySoundAtTransform("ACBF_Sol_Fault1", transform);
+                Audio.PlaySoundAtTransform("ACBF_Sol_Fault1", SpeakerPos);
 
             else if (index == 1)
-                Audio.PlaySoundAtTransform("ACBF_Sol_Fault2", transform);
+                Audio.PlaySoundAtTransform("ACBF_Sol_Fault2", SpeakerPos);
 
             else
-                Audio.PlaySoundAtTransform("ACBF_Sol_Doublefault", transform);
+                Audio.PlaySoundAtTransform("ACBF_Sol_Doublefault", SpeakerPos);
         }
 
         // If there were no strikes on the module
@@ -297,13 +299,13 @@ public class AnsweringCanBeFun : MonoBehaviour {
                 index = UnityEngine.Random.Range(0, 3);
 
             if (index == 0)
-                Audio.PlaySoundAtTransform("ACBF_Sol_Good3", transform);
+                Audio.PlaySoundAtTransform("ACBF_Sol_Good3", SpeakerPos);
 
             else if (index == 1)
-                Audio.PlaySoundAtTransform("ACBF_Sol_Good2", transform);
+                Audio.PlaySoundAtTransform("ACBF_Sol_Good2", SpeakerPos);
 
             else
-                Audio.PlaySoundAtTransform("ACBF_Sol_Good1", transform);
+                Audio.PlaySoundAtTransform("ACBF_Sol_Good1", SpeakerPos);
         }
 
         phaseTwo = true;
@@ -368,60 +370,68 @@ public class AnsweringCanBeFun : MonoBehaviour {
 
     // Chooses the message
     private void ChooseMessage() {
+        int[] stageOneMessages = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 31, 32, 33, 36, 38, 43, 44, 47 };
+
         if (phaseTwo == false)
-            msgIndex = UnityEngine.Random.Range(1, 22);
+            msgIndex = stageOneMessages[UnityEngine.Random.Range(0, stageOneMessages.Length)];
 
         else
-            msgIndex = UnityEngine.Random.Range(1, 43);
+            msgIndex = UnityEngine.Random.Range(1, 47);
 
         if (isUnicorn == true)
-            msgIndex = 43;
+            message = "THEREAREFOURBATTERIESINTWOHOLDERSANDALITBOBINDICATORPLEASEDIALONETWOTHREEFOURFIVESIXSEVENEIGHTNINEZERO";
 
-        switch (msgIndex) {
-        case 1: message = "EVERYBODYSTHESAMECOLORWITHTHELIGHTSOFF"; break;
-        case 2: message = "TOCONTINUEWITHTHISMODULEPLEASEPRESSONE"; break;
-        case 3: message = "THISVIDEOISNTCOOLYOUKNOWWHATSCOOLAMILLIONDOLLARS"; break;
-        case 4: message = "ANDNOWFORSOMETHINGCOMPLETELYDIFFERENT"; break;
-        case 5: message = "ITSFREEREALESTATE"; break;
-        case 6: message = "ARENTYOUTHATYOUTUBEGUITARIST"; break;
-        case 7: message = "INTERIORCROCODILEALLIGATORIDRIVEACHEVROLETMOVIETHEATER"; break;
-        case 8: message = "IMGOINGTOJAIL"; break;
-        case 9: message = "WHATAREYOUWEARINGJAKEFROMSTATEFARM"; break;
-        case 10: message = "EVERYSIXTYSECONDSINAFRICAAMINUTEPASSES"; break;
-        case 11: message = "GOODBYEAMERICAHELLONEWYORK"; break;
-        case 12: message = "YOUGETTOUNDERSTANDTHATIAMANUMBER"; break;
-        case 13: message = "REQUESTINGIMMEDIATEASSISTANCEOVERANDOUT"; break;
-        case 14: message = "YOUVEJUSTBEENPWNED"; break;
-        case 15: message = "THISISAROBBERY"; break;
-        case 16: message = "WHATDOYOUMEANYOUREATSOUP"; break;
-        case 17: message = "IAMGOINGTOBESWITZERLAND"; break;
-        case 18: message = "IKNOWWHATYOURETHINKING"; break;
-        case 19: message = "CONGRATULATIONSYOUVELAUNCHEDTHEPINKSLIPVIRUS"; break;
-        case 20: message = "WELLLETSSEENOWWEHAVEONOURTEAMWEHAVEWHOSONFIRST"; break;
-        case 21: message = "SHENEVEREVENKNEWHERSHIRTHADAWHOLELOTOFSTYLE"; break;
-        case 22: message = "OHYOUALMOSTHADITYOUGOTTOBEQUICKERTHANTHAT"; break;
-        case 23: message = "AMNESIADUSTYOUTHROWAPINCHTHEKIDFORGETSEVERYTHINGTHATHAPPENEDFORTHELASTFEWSECONDS"; break;
-        case 24: message = "IAUTOTUNEDTHEHOTENDSUSINGTHEBUILTINAUTOTUNER"; break;
-        case 25: message = "BABYBABYBABYOH"; break;
-        case 26: message = "RINGRINGRINGRINGRINGRINGRINGBANANAPHONE"; break;
-        case 27: message = "CANISLEEPINYOURBEDTONIGHT"; break;
-        case 28: message = "NINETYNINEBOTTLESOFBEERONTHEWALLHOWMANYTIMESDOESSIXGOINTONINETYNINEANDIDONTEVENDRINKBEER"; break;
-        case 29: message = "GIVEMEBACKTHATFILLETOFISHGIVEMETHATFISH"; break;
-        case 30: message = "FUDGEFACTORYATONEHUNDREDPERCENTAWESOMENESSPOWERINGUPTHEFISHINGRODEPICBASSDROPACTIVATE"; break;
-        case 31: message = "SOMEBODYMUGSYOUWITHAGUNJUSTEATTHEGUN"; break;
-        case 32: message = "HELLOISITMEYOURELOOKINGFOR"; break;
-        case 33: message = "LIFEGIVESYOULEMONSILLMAKEBEEFSTEW"; break;
-        case 34: message = "LETMESEEYOUMOVESOMETHING"; break;
-        case 35: message = "IEATTOOMUCHIDRINKTOOMUCHIWANTTOOMUCH"; break;
-        case 36: message = "ITSHIGHNOON"; break;
-        case 37: message = "NOPEITSJUSTCHUCKTESTA"; break;
-        case 38: message = "PSYCHTHATSTHEWRONGNUMBER"; break;
-        case 39: message = "WHATAREYOUSINKINGABOUT"; break;
-        case 40: message = "IJUSTWASTEDTENSECONDSOFYOURLIFE"; break;
-        case 41: message = "WHETHERYOUREYOUNGWHETHERYOUREOLDWHETHERYOUREREALLYOLDWHETHERYOUREGREATWHETHERYOUSUCKWHETHERYOUREALLYSUCK"; break;
-        case 42: message = "YEET"; break;
-        case 43: message = "THEREAREFOURBATTERIESINTWOHOLDERSANDALITBOBINDICATORPLEASEDIALONETWOTHREEFOURFIVESIXSEVENEIGHTNINEZERO"; break;
-        default: message = "TESTTESTONETWOTHREE"; break;
+        else {
+            switch (msgIndex) {
+            case 1: message = "EVERYBODYSTHESAMECOLORWITHTHELIGHTSOFF"; break;
+            case 2: message = "TOCONTINUEWITHTHISMODULEPLEASEPRESSONE"; break;
+            case 3: message = "THISVIDEOISNTCOOLYOUKNOWWHATSCOOLABILLIONDOLLARS"; break;
+            case 4: message = "ANDNOWFORSOMETHINGCOMPLETELYDIFFERENT"; break;
+            case 5: message = "ITSFREEREALESTATE"; break;
+            case 6: message = "ARENTYOUTHATYOUTUBEGUITARIST"; break;
+            case 7: message = "INTERIORCROCODILEALLIGATORIDRIVEACHEVROLETMOVIETHEATER"; break;
+            case 8: message = "IMGOINGTOJAIL"; break;
+            case 9: message = "WHATAREYOUWEARINGJAKEFROMSTATEFARM"; break;
+            case 10: message = "EVERYSIXTYSECONDSINAFRICAAMINUTEPASSES"; break;
+            case 11: message = "GOODBYEAMERICAHELLONEWYORK"; break;
+            case 12: message = "YOUGETTOUNDERSTANDTHATIAMANUMBER"; break;
+            case 13: message = "REQUESTINGIMMEDIATEASSISTANCEOVERANDOUT"; break;
+            case 14: message = "YOUVEJUSTBEENPWNED"; break;
+            case 15: message = "THISISAROBBERY"; break;
+            case 16: message = "WHATDOYOUMEANYOUREATSOUP"; break;
+            case 17: message = "IAMGOINGTOBESWITZERLAND"; break;
+            case 18: message = "IKNOWWHATYOURETHINKING"; break;
+            case 19: message = "CONGRATULATIONSYOUVELAUNCHEDTHEPINKSLIPVIRUS"; break;
+            case 20: message = "WELLLETSSEENOWWEHAVEONOURTEAMWEHAVEWHOSONFIRST"; break;
+            case 21: message = "SHENEVEREVENKNEWHERSHIRTHADAWHOLELOTOFSTYLE"; break;
+            case 22: message = "OHYOUALMOSTHADITYOUGOTTOBEQUICKERTHANTHAT"; break;
+            case 23: message = "AMNESIADUSTYOUTHROWAPINCHTHEKIDFORGETSEVERYTHINGTHATHAPPENEDFORTHELASTFEWSECONDS"; break;
+            case 24: message = "IAUTOTUNEDTHEHOTENDSUSINGTHEBUILTINAUTOTUNER"; break;
+            case 25: message = "BABYBABYBABYOH"; break;
+            case 26: message = "RINGRINGRINGRINGRINGRINGRINGBANANAPHONE"; break;
+            case 27: message = "CANISLEEPINYOURBEDTONIGHT"; break;
+            case 28: message = "NINETYNINEBOTTLESOFBEERONTHEWALLHOWMANYTIMESDOESSIXGOINTONINETYNINEANDIDONTEVENDRINKBEER"; break;
+            case 29: message = "GIVEMEBACKTHATFILLETOFISHGIVEMETHATFISH"; break;
+            case 30: message = "FUDGEFACTORYATONEHUNDREDPERCENTAWESOMENESSPOWERINGUPTHEFISHINGRODEPICBASSDROPACTIVATE"; break;
+            case 31: message = "SOMEBODYMUGSYOUWITHAGUNJUSTEATTHEGUN"; break;
+            case 32: message = "HELLOISITMEYOURELOOKINGFOR"; break;
+            case 33: message = "LIFEGIVESYOULEMONSILLMAKEBEEFSTEW"; break;
+            case 34: message = "LETMESEEYOUMOVESOMETHING"; break;
+            case 35: message = "IEATTOOMUCHIDRINKTOOMUCHIWANTTOOMUCH"; break;
+            case 36: message = "ITSHIGHNOON"; break;
+            case 37: message = "NOPEITSJUSTCHUCKTESTA"; break;
+            case 38: message = "PSYCHTHATSTHEWRONGNUMBER"; break;
+            case 39: message = "WHATAREYOUSINKINGABOUT"; break;
+            case 40: message = "IJUSTWASTEDTENSECONDSOFYOURLIFE"; break;
+            case 41: message = "WHETHERYOUREYOUNGWHETHERYOUREOLDWHETHERYOUREREALLYOLDWHETHERYOUREGREATWHETHERYOUSUCKWHETHERYOUREALLYSUCK"; break;
+            case 42: message = "YEET"; break;
+            case 43: message = "HOWDIDTHISHAPPEN"; break;
+            case 44: message = "WHENSTHEFOURTHOFJULY"; break;
+            case 45: message = "GOTAQUESTIONFORYOUWHATSHEAVIERAKILOGRAMOFSTEELORAKILOGRAMOFFEATHERS"; break;
+            case 46: message = "IFEELTHATIGETMORENERVOUSONSTAGESTHATDONTHAVEPOLESONTHEM"; break;
+            case 47: message = "SOISITANYWONDERPEOPLEAREAFRAIDOFTECHNOLOGY"; break;
+            default: message = "TESTTESTONETWOTHREE"; break;
+            }
         }
 
         Debug.LogFormat("[Answering Can Be Fun #{0}] The message string is \"{1}\"", moduleId, message);
@@ -432,51 +442,60 @@ public class AnsweringCanBeFun : MonoBehaviour {
         canListen = false;
         yield return new WaitForSeconds(0.5f);
 
-        switch (msgIndex) {
-        case 1: Audio.PlaySoundAtTransform("ACBF_Msg_Color", transform); break;
-        case 2: Audio.PlaySoundAtTransform("ACBF_Msg_Continue", transform); break;
-        case 3: Audio.PlaySoundAtTransform("ACBF_Msg_Cool", transform); break;
-        case 4: Audio.PlaySoundAtTransform("ACBF_Msg_Different", transform); break;
-        case 5: Audio.PlaySoundAtTransform("ACBF_Msg_Estate", transform); break;
-        case 6: Audio.PlaySoundAtTransform("ACBF_Msg_Guitar", transform); break;
-        case 7: Audio.PlaySoundAtTransform("ACBF_Msg_Interior", transform); break;
-        case 8: Audio.PlaySoundAtTransform("ACBF_Msg_Jail", transform); break;
-        case 9: Audio.PlaySoundAtTransform("ACBF_Msg_Jake", transform); break;
-        case 10: Audio.PlaySoundAtTransform("ACBF_Msg_Minute", transform); break;
-        case 11: Audio.PlaySoundAtTransform("ACBF_Msg_Newyork", transform); break;
-        case 12: Audio.PlaySoundAtTransform("ACBF_Msg_Number", transform); break;
-        case 13: Audio.PlaySoundAtTransform("ACBF_Msg_Out", transform); break;
-        case 14: Audio.PlaySoundAtTransform("ACBF_Msg_Pwned", transform); break;
-        case 15: Audio.PlaySoundAtTransform("ACBF_Msg_Robbery", transform); break;
-        case 16: Audio.PlaySoundAtTransform("ACBF_Msg_Soup", transform); break;
-        case 17: Audio.PlaySoundAtTransform("ACBF_Msg_Switzerland", transform); break;
-        case 18: Audio.PlaySoundAtTransform("ACBF_Msg_Thinking", transform); break;
-        case 19: Audio.PlaySoundAtTransform("ACBF_Msg_Virus", transform); break;
-        case 20: Audio.PlaySoundAtTransform("ACBF_Msg_Who", transform); break;
-        case 21: Audio.PlaySoundAtTransform("ACBF_Msg_Whole", transform); break;
-        case 22: Audio.PlaySoundAtTransform("ACBF_Msg_Almost", transform); break;
-        case 23: Audio.PlaySoundAtTransform("ACBF_Msg_Amnesia", transform); break;
-        case 24: Audio.PlaySoundAtTransform("ACBF_Msg_Autotune", transform); break;
-        case 25: Audio.PlaySoundAtTransform("ACBF_Msg_Baby", transform); break;
-        case 26: Audio.PlaySoundAtTransform("ACBF_Msg_Banana", transform); break;
-        case 27: Audio.PlaySoundAtTransform("ACBF_Msg_Bed", transform); break;
-        case 28: Audio.PlaySoundAtTransform("ACBF_Msg_Beer", transform); break;
-        case 29: Audio.PlaySoundAtTransform("ACBF_Msg_Fish", transform); break;
-        case 30: Audio.PlaySoundAtTransform("ACBF_Msg_Fudge", transform); break;
-        case 31: Audio.PlaySoundAtTransform("ACBF_Msg_Gun", transform); break;
-        case 32: Audio.PlaySoundAtTransform("ACBF_Msg_Hello", transform); break;
-        case 33: Audio.PlaySoundAtTransform("ACBF_Msg_Lemons", transform); break;
-        case 34: Audio.PlaySoundAtTransform("ACBF_Msg_Move", transform); break;
-        case 35: Audio.PlaySoundAtTransform("ACBF_Msg_Much", transform); break;
-        case 36: Audio.PlaySoundAtTransform("ACBF_Msg_Noon", transform); break;
-        case 37: Audio.PlaySoundAtTransform("ACBF_Msg_Nope", transform); break;
-        case 38: Audio.PlaySoundAtTransform("ACBF_Msg_Psych", transform); break;
-        case 39: Audio.PlaySoundAtTransform("ACBF_Msg_Sinking", transform); break;
-        case 40: Audio.PlaySoundAtTransform("ACBF_Msg_Wasted", transform); break;
-        case 41: Audio.PlaySoundAtTransform("ACBF_Msg_Whether", transform); break;
-        case 42: Audio.PlaySoundAtTransform("ACBF_Msg_Yeet", transform); break;
-        case 43: Audio.PlaySoundAtTransform("ACBF_Msg_Unicorn", transform); break;
-        default: Audio.PlaySoundAtTransform("ACBF_Msg_Test", transform); break;
+        if (isUnicorn == true)
+            Audio.PlaySoundAtTransform("ACBF_Msg_Unicorn", SpeakerPos);
+
+        else {
+            switch (msgIndex) {
+            case 1: Audio.PlaySoundAtTransform("ACBF_Msg_Color", SpeakerPos); break;
+            case 2: Audio.PlaySoundAtTransform("ACBF_Msg_Continue", SpeakerPos); break;
+            case 3: Audio.PlaySoundAtTransform("ACBF_Msg_Cool", SpeakerPos); break;
+            case 4: Audio.PlaySoundAtTransform("ACBF_Msg_Different", SpeakerPos); break;
+            case 5: Audio.PlaySoundAtTransform("ACBF_Msg_Estate", SpeakerPos); break;
+            case 6: Audio.PlaySoundAtTransform("ACBF_Msg_Guitar", SpeakerPos); break;
+            case 7: Audio.PlaySoundAtTransform("ACBF_Msg_Interior", SpeakerPos); break;
+            case 8: Audio.PlaySoundAtTransform("ACBF_Msg_Jail", SpeakerPos); break;
+            case 9: Audio.PlaySoundAtTransform("ACBF_Msg_Jake", SpeakerPos); break;
+            case 10: Audio.PlaySoundAtTransform("ACBF_Msg_Minute", SpeakerPos); break;
+            case 11: Audio.PlaySoundAtTransform("ACBF_Msg_Newyork", SpeakerPos); break;
+            case 12: Audio.PlaySoundAtTransform("ACBF_Msg_Number", SpeakerPos); break;
+            case 13: Audio.PlaySoundAtTransform("ACBF_Msg_Out", SpeakerPos); break;
+            case 14: Audio.PlaySoundAtTransform("ACBF_Msg_Pwned", SpeakerPos); break;
+            case 15: Audio.PlaySoundAtTransform("ACBF_Msg_Robbery", SpeakerPos); break;
+            case 16: Audio.PlaySoundAtTransform("ACBF_Msg_Soup", SpeakerPos); break;
+            case 17: Audio.PlaySoundAtTransform("ACBF_Msg_Switzerland", SpeakerPos); break;
+            case 18: Audio.PlaySoundAtTransform("ACBF_Msg_Thinking", SpeakerPos); break;
+            case 19: Audio.PlaySoundAtTransform("ACBF_Msg_Virus", SpeakerPos); break;
+            case 20: Audio.PlaySoundAtTransform("ACBF_Msg_Who", SpeakerPos); break;
+            case 21: Audio.PlaySoundAtTransform("ACBF_Msg_Whole", SpeakerPos); break;
+            case 22: Audio.PlaySoundAtTransform("ACBF_Msg_Almost", SpeakerPos); break;
+            case 23: Audio.PlaySoundAtTransform("ACBF_Msg_Amnesia", SpeakerPos); break;
+            case 24: Audio.PlaySoundAtTransform("ACBF_Msg_Autotune", SpeakerPos); break;
+            case 25: Audio.PlaySoundAtTransform("ACBF_Msg_Baby", SpeakerPos); break;
+            case 26: Audio.PlaySoundAtTransform("ACBF_Msg_Banana", SpeakerPos); break;
+            case 27: Audio.PlaySoundAtTransform("ACBF_Msg_Bed", SpeakerPos); break;
+            case 28: Audio.PlaySoundAtTransform("ACBF_Msg_Beer", SpeakerPos); break;
+            case 29: Audio.PlaySoundAtTransform("ACBF_Msg_Fish", SpeakerPos); break;
+            case 30: Audio.PlaySoundAtTransform("ACBF_Msg_Fudge", SpeakerPos); break;
+            case 31: Audio.PlaySoundAtTransform("ACBF_Msg_Gun", SpeakerPos); break;
+            case 32: Audio.PlaySoundAtTransform("ACBF_Msg_Hello", SpeakerPos); break;
+            case 33: Audio.PlaySoundAtTransform("ACBF_Msg_Lemons", SpeakerPos); break;
+            case 34: Audio.PlaySoundAtTransform("ACBF_Msg_Move", SpeakerPos); break;
+            case 35: Audio.PlaySoundAtTransform("ACBF_Msg_Much", SpeakerPos); break;
+            case 36: Audio.PlaySoundAtTransform("ACBF_Msg_Noon", SpeakerPos); break;
+            case 37: Audio.PlaySoundAtTransform("ACBF_Msg_Nope", SpeakerPos); break;
+            case 38: Audio.PlaySoundAtTransform("ACBF_Msg_Psych", SpeakerPos); break;
+            case 39: Audio.PlaySoundAtTransform("ACBF_Msg_Sinking", SpeakerPos); break;
+            case 40: Audio.PlaySoundAtTransform("ACBF_Msg_Wasted", SpeakerPos); break;
+            case 41: Audio.PlaySoundAtTransform("ACBF_Msg_Whether", SpeakerPos); break;
+            case 42: Audio.PlaySoundAtTransform("ACBF_Msg_Yeet", SpeakerPos); break;
+            case 43: Audio.PlaySoundAtTransform("ACBF_Msg_How", SpeakerPos); break;
+            case 44: Audio.PlaySoundAtTransform("ACBF_Msg_Fourth", SpeakerPos); break;
+            case 45: Audio.PlaySoundAtTransform("ACBF_Msg_Kilogram", SpeakerPos); break;
+            case 46: Audio.PlaySoundAtTransform("ACBF_Msg_Poles", SpeakerPos); break;
+            case 47: Audio.PlaySoundAtTransform("ACBF_Msg_Technology", SpeakerPos); break;
+            default: Audio.PlaySoundAtTransform("ACBF_Msg_Test", SpeakerPos); break;
+            }
         }
 
         yield return new WaitForSeconds(10.0f);

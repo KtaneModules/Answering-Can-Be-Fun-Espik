@@ -614,6 +614,14 @@ public class AnsweringCanBeFun : MonoBehaviour {
                         }
                         yield return new WaitForSeconds(0.1f);
                     }
+                    if ((isUnicorn == true && submitNumber == "1234567890") || ((submitNumber.Substring(0, 9) == newNumber.Substring(0, 9)) && isGoodTime == true))
+                    {
+                        yield return "solve";
+                    }
+                    else
+                    {
+                        yield return "strike";
+                    }
                 }
                 else {
                     yield return "sendtochaterror '" + parameters[1] + "' is an invalid phone number! Make sure to use digits 0-9 and if you tried to use -'s make sure they are in the right place!";
